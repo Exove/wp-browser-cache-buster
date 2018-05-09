@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Brower Cache Buster
- * Version: 0.3
- * Description: Filename-based cache busting for WordPress scripts/styles.
- * Author: Dominik Schilling
+ * Plugin Name: Browser Cache Buster
+ * Version: 0.3.1
+ * Description: Filename-based cache busting for WordPress scripts/styles. Based on a <a href="https://gist.github.com/ocean90/1966227#gistcomment-2030017">modified version of the original plugin</a>.
+ * Author: Dominik Schilling, <a href="https://github.com/KimchaC">KimchaC</a>, and <a href="https://www.exove.com">Exove</a>
  * Author URI: http://wphelper.de/
  * Plugin URI: https://dominikschilling.de/880/
  *
@@ -62,7 +62,13 @@ function ds_filename_based_cache_busting( $src ) {
 		return $src;
 	}
 
+	// Don't touch wp-includes scripts (since this plugin doesn't properly work with them)
+	if (strpos($_src['path'], 'wp-includes') !== false) {
+		return $src;
+	}
+
 	$file_path = ABSPATH . $_src['path'];
+	$file_path = str_replace('/wp/', '/', $file_path);
 	if (file_exists($file_path)) {
 		return preg_replace(
 			'/\.(min.js|min.css|js|css)($|\?.*$)/',
@@ -70,7 +76,6 @@ function ds_filename_based_cache_busting( $src ) {
 			$src
 		);
 	} else {
-
 		return $src;
 	}
 }
